@@ -92,6 +92,12 @@ public class ConnectorApplication {
     String account = this.environment.accountName();
     String label = this.environment.streamLabel();
     String product = this.environment.product();
-    return new RealTimeEnterpriseStreamingEndpoint(account, product, label);
+    int clientId = this.environment.clientId();
+
+    if (clientId > 0) {
+      return new RealTimeEnterpriseStreamingEndpoint(account, product, label, clientId);
+    } else {
+      return new RealTimeEnterpriseStreamingEndpoint(account, product, label);
+    }
   }
 }

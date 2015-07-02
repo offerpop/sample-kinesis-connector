@@ -10,6 +10,9 @@ aws.access.key=YOUR_AWS_ACCESS_KEY
 aws.secret.key=YOUR_SECRET_AWS_KEY
 aws.kinesis.stream.name=YOUR_DESIRED_KINESIS_STREAM_NAME
 
+# Client id to use if your account has backfill enabled, 0 denotes disabled
+gnip.client.id=0
+
 
 #Application configuration parameters-
 ########################
@@ -20,6 +23,5 @@ batch.size=0
 aws.kinesis.shard.count=2
 message.queue.size=300
 bytes.queue.size=3000
-gnip.client.id=1
 rate.limit=-1
 metric.report.interval.seconds=60

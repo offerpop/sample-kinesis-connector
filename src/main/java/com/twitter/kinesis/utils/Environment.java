@@ -55,8 +55,8 @@ public class Environment implements AWSCredentialsProvider {
     return props.getProperty("gnip.product");
   }
 
-  public String clientId() {
-    return props.getProperty("gnip.client.id");
+  public int clientId() {
+    return Integer.parseInt(props.getProperty("gnip.client.id"));
   }
 
   public String publisher() {
