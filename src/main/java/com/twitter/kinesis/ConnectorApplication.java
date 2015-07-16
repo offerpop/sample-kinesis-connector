@@ -3,6 +3,7 @@ package com.twitter.kinesis;
 import com.amazonaws.auth.AWSCredentialsProvider;
 import com.amazonaws.auth.AWSCredentialsProviderChain;
 import com.amazonaws.auth.InstanceProfileCredentialsProvider;
+import com.amazonaws.auth.DefaultAWSCredentialsProviderChain;
 import com.amazonaws.services.kinesis.AmazonKinesisClient;
 import com.twitter.hbc.ClientBuilder;
 import com.twitter.hbc.core.Client;
@@ -47,8 +48,8 @@ public class ConnectorApplication {
     this.environment.configure();
     LinkedBlockingQueue<String> downstream = new LinkedBlockingQueue<String>(10000);
     ShardMetricLogging shardMetric = new ShardMetricLogging();
-    AWSCredentialsProvider credentialsProvider = new AWSCredentialsProviderChain(new InstanceProfileCredentialsProvider(), this.environment);
-
+    // AWSCredentialsProvider credentialsProvider = new AWSCredentialsProviderChain(new InstanceProfileCredentialsProvider(), this.environment);
+    AWSCredentialsProviderChain credentialsProvider = new DefaultAWSCredentialsProviderChain();
     this.client = new ClientBuilder()
             .name("PowerTrackClient-01")
             .hosts(Constants.ENTERPRISE_STREAM_HOST)
