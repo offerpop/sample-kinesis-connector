@@ -48,7 +48,6 @@ public class ConnectorApplication {
     this.environment.configure();
     LinkedBlockingQueue<String> downstream = new LinkedBlockingQueue<String>(10000);
     ShardMetricLogging shardMetric = new ShardMetricLogging();
-    // AWSCredentialsProvider credentialsProvider = new AWSCredentialsProviderChain(new InstanceProfileCredentialsProvider(), this.environment);
     AWSCredentialsProviderChain credentialsProvider = new DefaultAWSCredentialsProviderChain();
     this.client = new ClientBuilder()
             .name("PowerTrackClient-01")
