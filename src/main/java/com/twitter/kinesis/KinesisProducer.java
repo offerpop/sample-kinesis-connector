@@ -11,6 +11,7 @@ import com.twitter.kinesis.utils.Environment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 import java.util.Random;
 import java.util.concurrent.BlockingQueue;
@@ -99,9 +100,11 @@ public class KinesisProducer implements Runnable {
     while (!Thread.interrupted()) {
       try {
         String message = upstream.take();
-        sendMessage(message.getBytes());
+        sendMessage(message.getBytes("UTF-8"));
       } catch (InterruptedException e) {
         logger.warn("Thread Interrupted");
+      } catch (UnsupportedEncodingException e) {
+        logger.warn("Unsupported Encoding: " + e.getMessage());
       }
     }
   }
