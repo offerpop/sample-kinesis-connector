@@ -111,7 +111,8 @@ public class Environment implements AWSCredentialsProvider {
   }
 
   private String getStringProperty(String propName, String def) {
-    String prop = System.getenv(propName);
+    String envVarName = propNameToEnvVar(propName);
+    String prop = System.getenv(envVarName);
     if (prop == null) {
       prop = props.getProperty(propName, def);
     }
@@ -143,5 +144,9 @@ public class Environment implements AWSCredentialsProvider {
     }
 
     return def;
+  }
+
+  private static String propNameToEnvVar(String propName) {
+    return propName.toUpperCase().replace('.', '_');
   }
 }
