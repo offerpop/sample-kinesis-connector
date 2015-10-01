@@ -90,16 +90,15 @@ public class Environment implements AWSCredentialsProvider {
   @Override
   public AWSCredentials getCredentials() {
     AWSCredentials credentials = new AWSCredentials() {
+
       @Override
       public String getAWSAccessKeyId() {
-        String value = props.getProperty("aws.access.key");
-        return value;
+        return getStringProperty("aws.access.key");
       }
 
       @Override
       public String getAWSSecretKey() {
-        String value = props.getProperty("aws.secret.key");
-        return value;
+        return getStringProperty("aws.secret.key");
       }
     };
     return credentials;
