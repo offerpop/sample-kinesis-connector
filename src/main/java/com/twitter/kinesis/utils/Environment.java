@@ -7,6 +7,9 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Properties;
 import java.util.TreeSet;
 
@@ -85,6 +88,30 @@ public class Environment implements AWSCredentialsProvider {
 
   public int getMessageQueueSize() {
     return getIntProperty("message.queue.size");
+  }
+
+  public Boolean isReplay() {
+    return Boolean.parseBoolean(props.getProperty("gnip.replay"));
+  }
+
+  public Date getReplayDate(String gnipDateString) {
+    try {
+      SimpleDateFormat format = new SimpleDateFormat("yyyyMMddHHmm");
+      format.parse(props.getProperty(gnipDateString));
+      return date;
+    } catch (ParseException e) {
+      e.printStackTrace();
+      return null;
+    }
+  }
+
+  public Date getReplayFromDate() {
+    return this.getReplayDate("gnip.from.date");
+  }
+
+
+  public Date getReplayToDate() {
+    return this.getReplayDate("gnip.to.date");
   }
 
   @Override

@@ -9,6 +9,7 @@ import com.twitter.hbc.ClientBuilder;
 import com.twitter.hbc.core.Client;
 import com.twitter.hbc.core.Constants;
 import com.twitter.hbc.core.endpoint.EnterpriseStreamingEndpoint;
+import com.twitter.hbc.core.endpoint.ReplayEnterpriseStreamingEndpoint;
 import com.twitter.hbc.core.endpoint.RealTimeEnterpriseStreamingEndpoint;
 import com.twitter.hbc.core.processor.LineStringProcessor;
 import com.twitter.hbc.httpclient.auth.BasicAuth;
@@ -21,6 +22,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.Date;
 
 public class ConnectorApplication {
   private static final Logger logger = LoggerFactory.getLogger(ConnectorApplication.class);
@@ -93,8 +95,13 @@ public class ConnectorApplication {
     String label = this.environment.streamLabel();
     String product = this.environment.product();
     int clientId = this.environment.clientId();
+    Boolean isReplay = this.environment.isReplay();
 
-    if (clientId > 0) {
+    if (isReplay) {
+      Date fromDate = this.environment.getReplayFromDate();
+      Date toDate = this.environment.getReplayToDate();
+      return new ReplayEnterpriseStreamingEndpoint(account, product, label, fromDate, toDate);
+    } else if (clientId > 0) {
       return new RealTimeEnterpriseStreamingEndpoint(account, product, label, clientId);
     } else {
       return new RealTimeEnterpriseStreamingEndpoint(account, product, label);
