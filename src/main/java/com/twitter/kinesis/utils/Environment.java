@@ -15,6 +15,7 @@ import java.util.TreeSet;
 
 public class Environment implements AWSCredentialsProvider {
   private static final Logger logger = LoggerFactory.getLogger(Environment.class);
+  private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyyMMddHHmm");
   private static Properties props;
 
   public void configure() {
@@ -91,27 +92,15 @@ public class Environment implements AWSCredentialsProvider {
   }
 
   public Boolean isReplay() {
-    return Boolean.parseBoolean(props.getProperty("gnip.replay"));
-  }
-
-  public Date getReplayDate(String gnipDateString) {
-    try {
-      SimpleDateFormat format = new SimpleDateFormat("yyyyMMddHHmm");
-      format.parse(props.getProperty(gnipDateString));
-      return date;
-    } catch (ParseException e) {
-      e.printStackTrace();
-      return null;
-    }
+    return getBooleanProperty("gnip.replay", false);
   }
 
   public Date getReplayFromDate() {
-    return this.getReplayDate("gnip.from.date");
+    return getReplayDate("gnip.from.date");
   }
 
-
   public Date getReplayToDate() {
-    return this.getReplayDate("gnip.to.date");
+    return getReplayDate("gnip.to.date");
   }
 
   @Override
@@ -172,7 +161,25 @@ public class Environment implements AWSCredentialsProvider {
     return def;
   }
 
+  private Boolean getBooleanProperty(String propName, Boolean def) {
+    String prop = getStringProperty(propName);
+    if (prop != null) {
+      return Boolean.parseBoolean(prop);
+    }
+
+    return def;
+  }
+
   private static String propNameToEnvVar(String propName) {
     return propName.toUpperCase().replace('.', '_');
+  }
+
+  private Date getReplayDate(String gnipDateString) {
+    try {
+      return DATE_FORMAT.parse(getStringProperty(gnipDateString));
+    } catch (ParseException e) {
+      e.printStackTrace();
+      return null;
+    }
   }
 }
