@@ -36,70 +36,69 @@ public class Environment implements AWSCredentialsProvider {
   }
 
   public String userName() {
-    return props.getProperty("gnip.user.name");
+    return getStringProperty("gnip.user.name");
   }
 
   public String userPassword() {
-    return props.getProperty("gnip.user.password");
+    return getStringProperty("gnip.user.password");
   }
 
   public String streamLabel() {
-    return props.getProperty("gnip.stream.label");
+    return getStringProperty("gnip.stream.label");
   }
 
   public String accountName() {
-    return props.getProperty("gnip.account.name");
+    return getStringProperty("gnip.account.name");
   }
 
   public String product() {
-    return props.getProperty("gnip.product");
+    return getStringProperty("gnip.product");
   }
 
   public int clientId() {
-    return Integer.parseInt(props.getProperty("gnip.client.id"));
+    return getIntProperty("gnip.client.id");
   }
 
   public String publisher() {
-    return props.getProperty("gnip.publisher", "twitter");
+    return getStringProperty("gnip.publisher", "twitter");
   }
 
   public int getProducerThreadCount() {
-    return Integer.parseInt(props.getProperty("producer.thread.count", "30"));
+    return getIntProperty("producer.thread.count", 30);
   }
 
   public double getRateLimit() {
-    return Double.parseDouble(props.getProperty("rate.limit", "-1"));
+    return getDoubleProperty("rate.limit", -1);
   }
 
   public int getReportInterval() {
-    return Integer.parseInt(props.getProperty("metric.report.interval.seconds", "60"));
+    return getIntProperty("metric.report.interval.seconds", 60);
   }
 
   public String kinesisStreamName() {
-    return props.getProperty("aws.kinesis.stream.name");
+    return getStringProperty("aws.kinesis.stream.name");
   }
 
   public int shardCount() {
-    return Integer.parseInt(props.getProperty("aws.kinesis.shard.count"));
+    return getIntProperty("aws.kinesis.shard.count");
   }
 
   public int getMessageQueueSize() {
-    return Integer.parseInt(props.getProperty("message.queue.size"));
+    return getIntProperty("message.queue.size");
   }
 
   @Override
   public AWSCredentials getCredentials() {
     AWSCredentials credentials = new AWSCredentials() {
+
       @Override
       public String getAWSAccessKeyId() {
-        String value = props.getProperty("aws.access.key");
-        return value;
+        return getStringProperty("aws.access.key");
       }
 
       @Override
       public String getAWSSecretKey() {
-        String value = props.getProperty("aws.secret.key");
-        return value;
+        return getStringProperty("aws.secret.key");
       }
     };
     return credentials;
@@ -108,5 +107,45 @@ public class Environment implements AWSCredentialsProvider {
   @Override
   public void refresh() {
     // No-op
+  }
+
+  private String getStringProperty(String propName, String def) {
+    String envVarName = propNameToEnvVar(propName);
+    String prop = System.getenv(envVarName);
+    if (prop == null) {
+      prop = props.getProperty(propName, def);
+    }
+
+    return prop;
+  }
+
+  private String getStringProperty(String propName) {
+    return getStringProperty(propName, null);
+  }
+
+  private int getIntProperty(String propName) {
+    return getIntProperty(propName, null);
+  }
+
+  private Integer getIntProperty(String propName, Integer def) {
+    String prop = getStringProperty(propName);
+    if (prop != null) {
+      return Integer.parseInt(prop);
+    }
+
+    return def;
+  }
+
+  private double getDoubleProperty(String propName, double def) {
+    String prop = getStringProperty(propName);
+    if (prop != null) {
+      return Double.parseDouble(prop);
+    }
+
+    return def;
+  }
+
+  private static String propNameToEnvVar(String propName) {
+    return propName.toUpperCase().replace('.', '_');
   }
 }
