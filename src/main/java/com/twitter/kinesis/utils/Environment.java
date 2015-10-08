@@ -7,11 +7,15 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Properties;
 import java.util.TreeSet;
 
 public class Environment implements AWSCredentialsProvider {
   private static final Logger logger = LoggerFactory.getLogger(Environment.class);
+  private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyyMMddHHmm");
   private static Properties props;
 
   public void configure() {
@@ -87,6 +91,18 @@ public class Environment implements AWSCredentialsProvider {
     return getIntProperty("message.queue.size");
   }
 
+  public Boolean isReplay() {
+    return getBooleanProperty("gnip.replay", false);
+  }
+
+  public Date getReplayFromDate() {
+    return getReplayDate("gnip.from.date");
+  }
+
+  public Date getReplayToDate() {
+    return getReplayDate("gnip.to.date");
+  }
+
   @Override
   public AWSCredentials getCredentials() {
     AWSCredentials credentials = new AWSCredentials() {
@@ -145,7 +161,25 @@ public class Environment implements AWSCredentialsProvider {
     return def;
   }
 
+  private Boolean getBooleanProperty(String propName, Boolean def) {
+    String prop = getStringProperty(propName);
+    if (prop != null) {
+      return Boolean.parseBoolean(prop);
+    }
+
+    return def;
+  }
+
   private static String propNameToEnvVar(String propName) {
     return propName.toUpperCase().replace('.', '_');
+  }
+
+  private Date getReplayDate(String gnipDateString) {
+    try {
+      return DATE_FORMAT.parse(getStringProperty(gnipDateString));
+    } catch (ParseException e) {
+      e.printStackTrace();
+      return null;
+    }
   }
 }
